@@ -1,0 +1,47 @@
+version: '3.4'
+
+services:
+  db-mongo:
+    image: mongo
+    restart: always
+    volumes:
+      - /tmp/data-db:/data/db
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGODB_DATABASE}
+
+  mongo-express:
+    image: mongo-express
+    restart: always
+    environment:
+      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_WEB_USER}
+      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_WEB_PASS}
+      ME_CONFIG_MONGODB_SERVER: db-mongo
+      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGODB_USERNAME}
+      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGODB_PASSWORD}
+      ME_CONFIG_OPTIONS_EDITORTHEME: 'abcdef'
+    ports:
+    - 8081:8081
+    depends_on:
+      - db-mongo
+
+  web:
+    build: .
+    command: python manage.py runserver 0.0.0.0:8000
+    image: app
+    restart: always
+    volumes:
+      - .:/app
+    environment:
+      MONGO_INITDB_ROOT_USENRAME: ${MONGODB_USERNAME}
+      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
+      MONGO_INITDB_DATABASE: ${MONGODB_DATABASE}
+    ports:
+      - "8000:8000"
+    depends_on:
+      - db-mongo
+      - mongo-express
+
+volumes:
+  data-db:

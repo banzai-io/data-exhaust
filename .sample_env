@@ -1,0 +1,6 @@
+MONGODB_DATABASE=signals_datalake
+MONGODB_USERNAME=dexhuser
+MONGODB_PASSWORD=
+
+MONGO_WEB_USER=banzai_deadmin
+MONGO_WEB_PASS=
