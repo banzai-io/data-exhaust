@@ -1,23 +1,4 @@
-from djongo import models
-from django import forms
-
-
-class Item(models.Model):
-    name = models.CharField(max_length=255)
-
-    class Meta:
-        abstract = True
-
-    def __str__(self):
-        return self.name
-
-
-class ItemForm(forms.ModelForm):
-    class Meta:
-        model = Item
-        fields = (
-            'name',
-        )
+from django.db import models
 
 
 class DataSignal(models.Model):
@@ -57,22 +38,16 @@ class DataSignal(models.Model):
         (UNREGISTERED, UNREGISTERED),
     )
 
-    _id = models.ObjectIdField()
-    signal_type = models.CharField(choices=SIGNAL_TYPES, max_length=6)
-    hashed_identifier = models.CharField(max_length=255)
-    signal_value = models.CharField(choices=SIGNAL_OPTIONS, max_length=80)
-    valid = models.BooleanField()
+    signal_type = models.CharField(choices=SIGNAL_TYPES, max_length=6, db_index=True)
+    hashed_identifier = models.CharField(max_length=255, db_index=True)
+    signal_value = models.CharField(choices=SIGNAL_OPTIONS, max_length=80, db_index=True)
+    valid = models.BooleanField(db_index=True)
     added = models.DateTimeField(auto_now_add=True)
 
     # Event related fields
-    event_name = models.CharField(max_length=255, help_text='Name of event where this signal originated')
-    seniority = models.ArrayField(
-        model_container=Item,
-        model_form_class=ItemForm,
-    )
-    job_functions = models.ArrayField(
-        model_container=Item,
-        model_form_class=ItemForm,
-    )
+    signal_meta = models.JSONField(
+        verbose_name='Signal Meta Data',
+        help_text='Contains event and contact data e.g. seniority, job options')
 
-    objects = models.DjongoManager()
+    def __str__(self) -> str:
+        return self.hashed_identifier

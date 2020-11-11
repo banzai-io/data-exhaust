@@ -37,6 +37,8 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'rest_framework',
+
     'signal_data',
 ]
 
@@ -76,15 +78,11 @@ WSGI_APPLICATION = 'data_exhaust.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'djongo',
-        'ENFORCE_SCHEMA': False,
-        'CLIENT':{
-                'host': 'db-mongo',
-                'name': os.environ.get('MONGO_INITDB_DATABASE'),
-                'username': os.environ.get('MONGO_INITDB_ROOT_USENRAME'),
-                'password': os.environ.get('MONGO_INITDB_ROOT_PASSWORD'),
-                'authMechanism': 'SCRAM-SHA-1',
-        }
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'signal_data_lake',
+        'USER': os.getenv('DB_USER'),
+        'PASSWORD': os.getenv('DB_PASS'),
+        'HOST': os.getenv('DB_HOST'),
     }
 }
 
@@ -126,3 +124,11 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/3.1/howto/static-files/
 
 STATIC_URL = '/static/'
+
+
+# Celery settings
+CELERY_BROKER_URL = os.getenv('CELERY_BROKER_URL')
+CELERY_RESULT_BACKEND = os.getenv('CELERY_BROKER_URL')
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TIMEZONE = TIME_ZONE

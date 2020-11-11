@@ -1,31 +1,36 @@
 version: '3.4'
 
 services:
-  db-mongo:
-    image: mongo
-    restart: always
-    volumes:
-      - /tmp/data-db:/data/db
+  postgres:
+    image: postgres:12-alpine
     environment:
-      MONGO_INITDB_ROOT_USERNAME: ${MONGODB_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
-      MONGO_INITDB_DATABASE: ${MONGODB_DATABASE}
-
-  mongo-express:
-    image: mongo-express
-    restart: always
-    environment:
-      ME_CONFIG_BASICAUTH_USERNAME: ${MONGO_WEB_USER}
-      ME_CONFIG_BASICAUTH_PASSWORD: ${MONGO_WEB_PASS}
-      ME_CONFIG_MONGODB_SERVER: db-mongo
-      ME_CONFIG_MONGODB_ADMINUSERNAME: ${MONGODB_USERNAME}
-      ME_CONFIG_MONGODB_ADMINPASSWORD: ${MONGODB_PASSWORD}
-      ME_CONFIG_OPTIONS_EDITORTHEME: 'abcdef'
+      - POSTGRES_USER=${POSTGRESQL_DB_USER}
+      - POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
     ports:
-    - 8081:8081
+      - 9100:5432
+  rabbit:
+    image: rabbitmq:3-management-alpine
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=${BROKER_USER}
+      - RABBITMQ_DEFAULT_PASS=${BROKER_PASSWORD}
+      - RABBITMQ_DEFAULT_VHOST=vhost
+  celery:
+    build: .
+    command: celery -A data_exhaust.celeryapp worker -Q default -l debug
+    volumes:
+      - .:/app
+    environment:
+      - DB_HOST=postgres
+      - DB_USER=${POSTGRESQL_DB_USER}
+      - DB_PASS=${POSTGRESQL_PASSWORD}
+      - DJANGO_SECRET_KEY=${DJ_SECRET_KEY}
+      - CELERY_BROKER_URL=amqp://${BROKER_USER}:${BROKER_PASSWORD}@rabbit:5672/vhost
     depends_on:
-      - db-mongo
-
+      - postgres
+      - rabbit
   web:
     build: .
     command: python manage.py runserver 0.0.0.0:8000
@@ -34,14 +39,53 @@ services:
     volumes:
       - .:/app
     environment:
-      MONGO_INITDB_ROOT_USENRAME: ${MONGODB_USERNAME}
-      MONGO_INITDB_ROOT_PASSWORD: ${MONGODB_PASSWORD}
-      MONGO_INITDB_DATABASE: ${MONGODB_DATABASE}
+      - DB_HOST=postgres
+      - DB_USER=${POSTGRESQL_DB_USER}
+      - DB_PASS=${POSTGRESQL_PASSWORD}
+      - DJANGO_SECRET_KEY=${DJ_SECRET_KEY}
+      - CELERY_BROKER_URL=amqp://${BROKER_USER}:${BROKER_PASSWORD}@rabbit:5672/vhost
     ports:
       - "8000:8000"
     depends_on:
-      - db-mongo
-      - mongo-express
+      - migrate
+      - postgres
+      - rabbit
+  make-migrations:
+    build: .
+    command: python manage.py makemigrations
+    image: app
+    volumes:
+      - .:/app
+    environment:
+      - DB_HOST=postgres
+      - DB_USER=${POSTGRESQL_DB_USER}
+      - DB_PASS=${POSTGRESQL_PASSWORD}
+      - DJANGO_SECRET_KEY=${DJ_SECRET_KEY}
+      - CELERY_BROKER_URL=amqp://${BROKER_USER}:${BROKER_PASSWORD}@rabbit:5672/vhost
+    depends_on:
+      - postgres
+      - rabbit
+  migrate:
+    build: .
+    command: python manage.py migrate
+    image: app
+    volumes:
+      - .:/app
+    environment:
+      - DB_HOST=postgres
+      - DB_USER=${POSTGRESQL_DB_USER}
+      - DB_PASS=${POSTGRESQL_PASSWORD}
+      - DJANGO_SECRET_KEY=${DJ_SECRET_KEY}
+      - CELERY_BROKER_URL=amqp://${BROKER_USER}:${BROKER_PASSWORD}@rabbit:5672/vhost
+    depends_on:
+      - make-migrations
 
-volumes:
-  data-db:
+  flower:
+    image: mher/flower
+    environment:
+      - CELERY_BROKER_URL=amqp://${BROKER_USER}:${BROKER_PASSWORD}@rabbit:5672/vhost
+      - FLOWER_PORT=5555
+    ports:
+      - 5555:5555
+    depends_on:
+      - celery
