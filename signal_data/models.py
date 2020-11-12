@@ -38,16 +38,28 @@ class DataSignal(models.Model):
         (UNREGISTERED, UNREGISTERED),
     )
 
-    signal_type = models.CharField(choices=SIGNAL_TYPES, max_length=6, db_index=True)
-    hashed_identifier = models.CharField(max_length=255, db_index=True)
-    signal_value = models.CharField(choices=SIGNAL_OPTIONS, max_length=80, db_index=True)
+    signal_type = models.CharField(
+        choices=SIGNAL_TYPES,
+        max_length=6,
+        db_index=True
+    )
+    hashed_identifier = models.CharField(
+        max_length=255,
+        db_index=True
+    )
+    signal_value = models.CharField(
+        choices=SIGNAL_OPTIONS,
+        max_length=80,
+        db_index=True
+    )
     valid = models.BooleanField(db_index=True)
     added = models.DateTimeField(auto_now_add=True)
 
     # Event related fields
     signal_meta = models.JSONField(
         verbose_name='Signal Meta Data',
-        help_text='Contains event and contact data e.g. seniority, job options')
+        help_text='Contains event and contact data e.g. seniority, job options'
+    )
 
     def __str__(self) -> str:
         return self.hashed_identifier
