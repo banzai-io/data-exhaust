@@ -73,14 +73,8 @@ services:
     restart: always
     volumes:
       - .:/app
-    environment:
-      - DB_HOST=postgres
-      - DB_NAME=${POSTGRESQL_DB_NAME}
-      - DB_USER=${POSTGRESQL_DB_USER}
-      - DB_PASS=${POSTGRESQL_PASSWORD}
-      - DJANGO_SECRET_KEY=${DJ_SECRET_KEY}
-      - DJANGO_DEBUG=${DJANGO_DEBUG}
-      - CELERY_BROKER_URL=amqp://${BROKER_USER}:${BROKER_PASSWORD}@rabbit:5672/vhost
+    env_file:
+      - .env
     depends_on:
       - migrate
       - postgres
