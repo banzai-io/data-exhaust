@@ -29,6 +29,7 @@ services:
       - DB_USER=${POSTGRESQL_DB_USER}
       - DB_PASS=${POSTGRESQL_PASSWORD}
       - DJANGO_SECRET_KEY=${DJ_SECRET_KEY}
+      - DJANGO_DEBUG=${DJANGO_DEBUG}
       - CELERY_BROKER_URL=amqp://${BROKER_USER}:${BROKER_PASSWORD}@rabbit:5672/vhost
     depends_on:
       - postgres
@@ -46,6 +47,7 @@ services:
       - DB_USER=${POSTGRESQL_DB_USER}
       - DB_PASS=${POSTGRESQL_PASSWORD}
       - DJANGO_SECRET_KEY=${DJ_SECRET_KEY}
+      - DJANGO_DEBUG=${DJANGO_DEBUG}
       - CELERY_BROKER_URL=amqp://${BROKER_USER}:${BROKER_PASSWORD}@rabbit:5672/vhost
     ports:
       - "8200:8200"
@@ -65,6 +67,7 @@ services:
       - DB_USER=${POSTGRESQL_DB_USER}
       - DB_PASS=${POSTGRESQL_PASSWORD}
       - DJANGO_SECRET_KEY=${DJ_SECRET_KEY}
+      - DJANGO_DEBUG=${DJANGO_DEBUG}
       - CELERY_BROKER_URL=amqp://${BROKER_USER}:${BROKER_PASSWORD}@rabbit:5672/vhost
     depends_on:
       - postgres
@@ -81,6 +84,7 @@ services:
       - DB_USER=${POSTGRESQL_DB_USER}
       - DB_PASS=${POSTGRESQL_PASSWORD}
       - DJANGO_SECRET_KEY=${DJ_SECRET_KEY}
+      - DJANGO_DEBUG=${DJANGO_DEBUG}
       - CELERY_BROKER_URL=amqp://${BROKER_USER}:${BROKER_PASSWORD}@rabbit:5672/vhost
     depends_on:
       - make-migrations
@@ -99,6 +103,7 @@ services:
       - DB_USER=${POSTGRESQL_DB_USER}
       - DB_PASS=${POSTGRESQL_PASSWORD}
       - DJANGO_SECRET_KEY=${DJ_SECRET_KEY}
+      - DJANGO_DEBUG=${DJANGO_DEBUG}
       - CELERY_BROKER_URL=amqp://${BROKER_USER}:${BROKER_PASSWORD}@rabbit:5672/vhost
     depends_on:
       - migrate
