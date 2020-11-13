@@ -43,7 +43,7 @@ class DataSignal(models.Model):
         max_length=6,
         db_index=True
     )
-    hashed_identifier = models.CharField(
+    identifier = models.CharField(
         max_length=255,
         db_index=True
     )
@@ -52,14 +52,19 @@ class DataSignal(models.Model):
         max_length=80,
         db_index=True
     )
-    valid = models.BooleanField(db_index=True)
+    valid = models.BooleanField(
+        db_index=True,
+        default=False
+    )
     added = models.DateTimeField(auto_now_add=True)
 
     # Event related fields
     signal_meta = models.JSONField(
         verbose_name='Signal Meta Data',
-        help_text='Contains event and contact data e.g. seniority, job options'
+        help_text='Contains event and contact data e.g. seniority, job options',
+        null=True,
+        blank=True
     )
 
     def __str__(self) -> str:
-        return self.hashed_identifier
+        return f'{self.signal_type} signal - {self.valid}'
