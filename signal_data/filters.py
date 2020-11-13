@@ -13,6 +13,9 @@ class CustomDataSignalFilter(FilterSet):
 
     def filter_by_encrypted_identifier(self, queryset, name, value):
         hashed_q_param = hash_identifier(value)
-        return queryset.filter(**{
-            name: hashed_q_param
-        })
+        if hashed_q_param:
+            return queryset.filter(**{
+                name: hashed_q_param
+            })
+        else:
+            return queryset.none()

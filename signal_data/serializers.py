@@ -8,6 +8,7 @@ class DataSignalSerializer(serializers.ModelSerializer):
     class Meta:
         model = DataSignal
         fields = [
+            'uuid',
             'signal_type',
             'identifier',
             'signal_value',
@@ -19,5 +20,6 @@ class DataSignalSerializer(serializers.ModelSerializer):
     def validate_identifier(self, value):
         if not value:
             raise serializers.ValidationError('This field is required')
+        elif not hash_identifier(value):
+            raise serializers.ValidationError('Please supply a valid phone number')
         return hash_identifier(value)
-

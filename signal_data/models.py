@@ -1,3 +1,4 @@
+import uuid as uuid
 from django.db import models
 
 
@@ -41,7 +42,7 @@ class DataSignal(models.Model):
         (UNSUBSCRIBE, UNSUBSCRIBE),
         (COMPLAINT, COMPLAINT),
     )
-
+    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     signal_type = models.CharField(
         choices=SIGNAL_TYPES,
         max_length=6,
