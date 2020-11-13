@@ -15,6 +15,9 @@ migrate: dc
 run: command=up web celery flower
 run: dc
 
+test: command=run tests
+test: dc
+
 bash: command=run --rm web sh
 bash: dc
 

@@ -6,7 +6,7 @@ class OrganizationAPIKeyManager(APIKeyManager):
     def is_internal(self, key: str) -> bool:
         try:
             api_key = self.get_from_key(key)
-        except self.model.DoesNotExist:
+        except self.model.DoesNotExist:  # pragma: no cover
             return False
 
         if api_key.internal:

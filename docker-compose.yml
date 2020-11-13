@@ -12,8 +12,8 @@ services:
   rabbit:
     image: rabbitmq:3-management-alpine
     ports:
-      - 5672:5672
-      - 15672:15672
+      - 5373:5672
+      - 15373:15672
     environment:
       - RABBITMQ_DEFAULT_USER=${BROKER_USER}
       - RABBITMQ_DEFAULT_PASS=${BROKER_PASSWORD}
@@ -84,6 +84,25 @@ services:
       - CELERY_BROKER_URL=amqp://${BROKER_USER}:${BROKER_PASSWORD}@rabbit:5672/vhost
     depends_on:
       - make-migrations
+  tests:
+    build:
+      context: .
+      dockerfile: test.Dockerfile
+    command: sh -c "flake8 && coverage run --branch -m pytest -v --ds=data_exhaust.settings && coverage report"
+    image: app
+    restart: always
+    volumes:
+      - .:/app
+    environment:
+      - DB_HOST=postgres
+      - DB_NAME=${POSTGRESQL_DB_NAME}
+      - DB_USER=${POSTGRESQL_DB_USER}
+      - DB_PASS=${POSTGRESQL_PASSWORD}
+      - DJANGO_SECRET_KEY=${DJ_SECRET_KEY}
+      - CELERY_BROKER_URL=amqp://${BROKER_USER}:${BROKER_PASSWORD}@rabbit:5672/vhost
+    depends_on:
+      - migrate
+      - postgres
 
   flower:
     image: mher/flower

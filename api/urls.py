@@ -1,6 +1,5 @@
 from django.conf.urls import url
 from django.urls import include, path
-from rest_framework.permissions import IsAuthenticated
 from rest_framework.routers import DefaultRouter
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
@@ -22,7 +21,7 @@ schema_view = get_schema_view(
 
 
 router = DefaultRouter()
-router.register(r'data-signals-internal', banzai.PrivateDataSignalViewSet)
+router.register(r'data-signals-internal', banzai.PrivateDataSignalViewSet, basename='data_signals_internal')
 router.register(r'data-signals', provider.PublicDataSignalViewSet)
 
 urlpatterns = [

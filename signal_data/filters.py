@@ -9,7 +9,7 @@ class CustomDataSignalFilter(FilterSet):
 
     class Meta:
         model = DataSignal
-        fields = ['signal_type', 'signal_value', 'valid',]
+        fields = ['signal_type', 'signal_value', 'valid', ]
 
     def filter_by_encrypted_identifier(self, queryset, name, value):
         hashed_q_param = hash_identifier(value)

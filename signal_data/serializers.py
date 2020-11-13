@@ -19,7 +19,7 @@ class DataSignalSerializer(serializers.ModelSerializer):
 
     def validate_identifier(self, value):
         if not value:
-            raise serializers.ValidationError('This field is required')
+            raise serializers.ValidationError('This field is required')  # pragma: no cover
         elif not hash_identifier(value):
             raise serializers.ValidationError('Please supply a valid phone number')
         return hash_identifier(value)

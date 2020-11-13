@@ -8,8 +8,11 @@ def hash_identifier(value):
     if '@' not in value:
         try:
             parsed_num = phonenumbers.parse(value, 'US')
-            value = phonenumbers.format_number(parsed_num, phonenumbers.PhoneNumberFormat.E164)
-        except AttributeError:
+            if phonenumbers.is_possible_number(parsed_num):
+                value = phonenumbers.format_number(parsed_num, phonenumbers.PhoneNumberFormat.E164)
+            else:
+                return None
+        except phonenumbers.phonenumberutil.NumberParseException:
             return None
     return hashlib.pbkdf2_hmac(
         'sha256',
