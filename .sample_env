@@ -1,10 +1,4 @@
-DJ_SECRET_KEY=
-
-POSTGRESQL_DB_NAME=data_exhaust
-POSTGRESQL_DB_USER=data_exhaust
-POSTGRESQL_PASSWORD=
-
-BROKER_USER=de_broker_user
-BROKER_PASSWORD=
-
+DJANGO_SECRET_KEY=supersecret
+DATABASE_URL=postgres://data_exhaust:data_exhaust@postgres/data_exhaust
+CELERY_BROKER_URL=amqp://data_exhaust:data_exhaust@rabbit/data_exhaust
 DJANGO_DEBUG=True
