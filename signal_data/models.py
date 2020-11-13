@@ -15,14 +15,16 @@ class DataSignal(models.Model):
     OPENED = 'opened'
     CLICKED = 'clicked'
     # Phone related signals
-    NA = 'No Answer'
-    BAD_CONTACT = 'Bad Contact'
-    DNC = 'Do Not Contact'
-    ANSWERED = 'Answered, Call Back'
-    MORE_INFO = 'Send More Info'
-    REGISTERED = 'Register'
-    ON_DEMAND = 'On Demand'
-    UNREGISTERED = 'Un-registered'
+    NA = 'no-answer'
+    BAD_CONTACT = 'bad-contact'
+    DNC = 'do-not-contact'
+    ANSWERED = 'answered-call-back'
+    MORE_INFO = 'send-more-info'
+    REGISTERED = 'register'
+    ON_DEMAND = 'on-demand'
+    UNREGISTERED = 'un-registered'
+    UNSUBSCRIBE = 'unsubscribe'
+    COMPLAINT = 'complaint'
 
     SIGNAL_OPTIONS = (
         (BOUNCE, BOUNCE),
@@ -36,6 +38,8 @@ class DataSignal(models.Model):
         (REGISTERED, REGISTERED),
         (ON_DEMAND, ON_DEMAND),
         (UNREGISTERED, UNREGISTERED),
+        (UNSUBSCRIBE, UNSUBSCRIBE),
+        (COMPLAINT, COMPLAINT),
     )
 
     signal_type = models.CharField(
