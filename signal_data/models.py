@@ -11,37 +11,6 @@ class DataSignal(models.Model):
         (PHONE_SIGNAL, PHONE_SIGNAL)
     )
 
-    # Email related signals
-    BOUNCE = 'bounced'
-    OPENED = 'opened'
-    CLICKED = 'clicked'
-    # Phone related signals
-    NA = 'no-answer'
-    BAD_CONTACT = 'bad-contact'
-    DNC = 'do-not-contact'
-    ANSWERED = 'answered-call-back'
-    MORE_INFO = 'send-more-info'
-    REGISTERED = 'register'
-    ON_DEMAND = 'on-demand'
-    UNREGISTERED = 'un-registered'
-    UNSUBSCRIBE = 'unsubscribe'
-    COMPLAINT = 'complaint'
-
-    SIGNAL_OPTIONS = (
-        (BOUNCE, BOUNCE),
-        (OPENED, OPENED),
-        (CLICKED, CLICKED),
-        (NA, NA),
-        (BAD_CONTACT, BAD_CONTACT),
-        (DNC, DNC),
-        (ANSWERED, ANSWERED),
-        (MORE_INFO, MORE_INFO),
-        (REGISTERED, REGISTERED),
-        (ON_DEMAND, ON_DEMAND),
-        (UNREGISTERED, UNREGISTERED),
-        (UNSUBSCRIBE, UNSUBSCRIBE),
-        (COMPLAINT, COMPLAINT),
-    )
     uuid = models.UUIDField(default=uuid.uuid4, editable=False)
     signal_type = models.CharField(
         choices=SIGNAL_TYPES,
@@ -53,8 +22,8 @@ class DataSignal(models.Model):
         db_index=True
     )
     signal_value = models.CharField(
-        choices=SIGNAL_OPTIONS,
-        max_length=80,
+        default='catch_all',
+        max_length=120,
         db_index=True
     )
     valid = models.BooleanField(
