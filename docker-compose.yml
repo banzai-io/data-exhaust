@@ -4,9 +4,9 @@ services:
   postgres:
     image: postgres:12-alpine
     environment:
-      - DB_NAME=${POSTGRESQL_DB_NAME}
-      - POSTGRES_USER=${POSTGRESQL_DB_USER}
-      - POSTGRES_PASSWORD=${POSTGRESQL_PASSWORD}
+      - DB_NAME=data_exhaust
+      - POSTGRES_USER=data_exhaust
+      - POSTGRES_PASSWORD=data_exhaust
     ports:
       - 9100:5432
   rabbit:
@@ -15,22 +15,16 @@ services:
       - 5373:5672
       - 15373:15672
     environment:
-      - RABBITMQ_DEFAULT_USER=${BROKER_USER}
-      - RABBITMQ_DEFAULT_PASS=${BROKER_PASSWORD}
-      - RABBITMQ_DEFAULT_VHOST=vhost
+      - RABBITMQ_DEFAULT_USER=data_exhaust
+      - RABBITMQ_DEFAULT_PASS=data_exhaust
+      - RABBITMQ_DEFAULT_VHOST=data_exhaust
   celery:
     build: .
     command: celery -A data_exhaust.celeryapp worker -Q default -l debug
     volumes:
       - .:/app
-    environment:
-      - DB_HOST=postgres
-      - DB_NAME=${POSTGRESQL_DB_NAME}
-      - DB_USER=${POSTGRESQL_DB_USER}
-      - DB_PASS=${POSTGRESQL_PASSWORD}
-      - DJANGO_SECRET_KEY=${DJ_SECRET_KEY}
-      - DJANGO_DEBUG=${DJANGO_DEBUG}
-      - CELERY_BROKER_URL=amqp://${BROKER_USER}:${BROKER_PASSWORD}@rabbit:5672/vhost
+    env_file:
+      - .env
     depends_on:
       - postgres
       - rabbit
@@ -41,14 +35,8 @@ services:
     restart: always
     volumes:
       - .:/app
-    environment:
-      - DB_HOST=postgres
-      - DB_NAME=${POSTGRESQL_DB_NAME}
-      - DB_USER=${POSTGRESQL_DB_USER}
-      - DB_PASS=${POSTGRESQL_PASSWORD}
-      - DJANGO_SECRET_KEY=${DJ_SECRET_KEY}
-      - DJANGO_DEBUG=${DJANGO_DEBUG}
-      - CELERY_BROKER_URL=amqp://${BROKER_USER}:${BROKER_PASSWORD}@rabbit:5672/vhost
+    env_file:
+      - .env
     ports:
       - "8200:8200"
     depends_on:
@@ -61,14 +49,8 @@ services:
     image: app
     volumes:
       - .:/app
-    environment:
-      - DB_HOST=postgres
-      - DB_NAME=${POSTGRESQL_DB_NAME}
-      - DB_USER=${POSTGRESQL_DB_USER}
-      - DB_PASS=${POSTGRESQL_PASSWORD}
-      - DJANGO_SECRET_KEY=${DJ_SECRET_KEY}
-      - DJANGO_DEBUG=${DJANGO_DEBUG}
-      - CELERY_BROKER_URL=amqp://${BROKER_USER}:${BROKER_PASSWORD}@rabbit:5672/vhost
+    env_file:
+      - .env
     depends_on:
       - postgres
       - rabbit
@@ -78,14 +60,8 @@ services:
     image: app
     volumes:
       - .:/app
-    environment:
-      - DB_HOST=postgres
-      - DB_NAME=${POSTGRESQL_DB_NAME}
-      - DB_USER=${POSTGRESQL_DB_USER}
-      - DB_PASS=${POSTGRESQL_PASSWORD}
-      - DJANGO_SECRET_KEY=${DJ_SECRET_KEY}
-      - DJANGO_DEBUG=${DJANGO_DEBUG}
-      - CELERY_BROKER_URL=amqp://${BROKER_USER}:${BROKER_PASSWORD}@rabbit:5672/vhost
+    env_file:
+      - .env
     depends_on:
       - make-migrations
   tests:
@@ -97,14 +73,8 @@ services:
     restart: always
     volumes:
       - .:/app
-    environment:
-      - DB_HOST=postgres
-      - DB_NAME=${POSTGRESQL_DB_NAME}
-      - DB_USER=${POSTGRESQL_DB_USER}
-      - DB_PASS=${POSTGRESQL_PASSWORD}
-      - DJANGO_SECRET_KEY=${DJ_SECRET_KEY}
-      - DJANGO_DEBUG=${DJANGO_DEBUG}
-      - CELERY_BROKER_URL=amqp://${BROKER_USER}:${BROKER_PASSWORD}@rabbit:5672/vhost
+    env_file:
+      - .env
     depends_on:
       - migrate
       - postgres
@@ -112,7 +82,7 @@ services:
   flower:
     image: mher/flower
     environment:
-      - CELERY_BROKER_URL=amqp://${BROKER_USER}:${BROKER_PASSWORD}@rabbit:5672/vhost
+      - CELERY_BROKER_URL=${CELERY_BROKER_URL}
       - FLOWER_PORT=5555
     ports:
       - 5555:5555
