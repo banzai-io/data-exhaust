@@ -12,7 +12,9 @@ https://docs.djangoproject.com/en/3.1/ref/settings/
 from pathlib import Path
 import environ
 
-env = environ.Env()
+env = environ.Env(
+    CELERY_BROKER_URL=(str, '')
+)
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -126,3 +128,20 @@ CELERY_RESULT_BACKEND = env('CELERY_BROKER_URL')
 CELERY_TASK_SERIALIZER = 'json'
 CELERY_RESULT_SERIALIZER = 'json'
 CELERY_TIMEZONE = TIME_ZONE
+
+SWAGGER_SETTINGS = {
+    'SECURITY_DEFINITIONS': {
+        'Api-Key': {
+            'type': 'apiKey',
+            'name': 'Authorization',
+            'in': 'header',
+            'description': f"""By default, clients must pass their API key via the `Authorization` header. It must be formatted as follows: `Authorization: Api-Key ********` where `********` refers to the API given by Banzai.
+                """
+        },
+    }
+}
+
+REST_FRAMEWORK = {
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+    'PAGE_SIZE': 100
+}

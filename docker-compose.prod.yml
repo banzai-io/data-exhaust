@@ -1,0 +1,61 @@
+version: '3.4'
+
+services:
+  postgres:
+    image: postgres:12-alpine
+    environment:
+      - DB_NAME=data_exhaust
+      - POSTGRES_USER=data_exhaust
+      - POSTGRES_PASSWORD=data_exhaust
+    ports:
+      - 9100:5432
+  web:
+    build:
+      context: .
+      dockerfile: production.Dockerfile
+    command: python manage.py runserver 0.0.0.0:8200
+    image: app
+    restart: always
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    ports:
+      - "8200:8200"
+    depends_on:
+      - migrate
+      - postgres
+  make-migrations:
+    build: .
+    command: python manage.py makemigrations
+    image: app
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - postgres
+  migrate:
+    build: .
+    command: python manage.py migrate
+    image: app
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - make-migrations
+  tests:
+    build:
+      context: .
+      dockerfile: test.Dockerfile
+    command: sh -c "flake8 && coverage run --branch -m pytest -v --ds=data_exhaust.settings && coverage report"
+    image: app
+    restart: always
+    volumes:
+      - .:/app
+    env_file:
+      - .env
+    depends_on:
+      - migrate
+      - postgres
