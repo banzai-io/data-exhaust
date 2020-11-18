@@ -12,10 +12,14 @@ class CustomDataSignalFilter(FilterSet):
         fields = ['signal_type', 'signal_value', 'valid', ]
 
     def filter_by_encrypted_identifier(self, queryset, name, value):
-        hashed_q_param = hash_identifier(value)
-        if hashed_q_param:
+        hashed_q_params = [hash_identifier(x) for x in value.split(',') if hash_identifier(x)]
+        if len(hashed_q_params) > 1:
             return queryset.filter(**{
-                name: hashed_q_param
+                name + '__in': hashed_q_params
+            })
+        elif len(hashed_q_params) == 1:
+            return queryset.filter(**{
+                name: hashed_q_params[0]
             })
         else:
             return queryset.none()

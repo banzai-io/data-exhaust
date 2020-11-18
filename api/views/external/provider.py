@@ -59,5 +59,6 @@ class PublicDataSignalViewSet(viewsets.ReadOnlyModelViewSet):
     serializer_class = DataSignalSerializer
     filter_backends = (DjangoFilterBackend, )
     filterset_class = CustomDataSignalFilter
+    lookup_field = 'uuid'
 
     permission_classes = [permissions.IsAuthenticated | HasOrganizationAPIKey]

@@ -11,7 +11,11 @@ class DataSignal(models.Model):
         (PHONE_SIGNAL, PHONE_SIGNAL)
     )
 
-    uuid = models.UUIDField(default=uuid.uuid4, editable=False)
+    uuid = models.UUIDField(
+        default=uuid.uuid4,
+        editable=False,
+        unique=True
+    )
     signal_type = models.CharField(
         choices=SIGNAL_TYPES,
         max_length=6,

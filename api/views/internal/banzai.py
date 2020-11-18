@@ -56,3 +56,4 @@ class PrivateDataSignalViewSet(viewsets.ModelViewSet):
     queryset = DataSignal.objects.all()
     serializer_class = DataSignalSerializer
     permission_classes = [permissions.IsAuthenticated | HasInternalAPIKey]
+    lookup_field = 'uuid'
