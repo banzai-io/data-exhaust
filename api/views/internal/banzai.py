@@ -28,7 +28,8 @@ signal_value_param=openapi.Parameter(
 identifier_param=openapi.Parameter(
     name='identifier',
     in_="query",
-    description="Raw identifier (phone or email) - will be hashed at destination",
+    description="Raw identifier (phone or email) - will be hashed at destination. "
+                "You can provide a comma-separated list of identifiers, and the results will include signals for all",
     required=True,
     type=openapi.TYPE_STRING
 )
@@ -56,3 +57,4 @@ class PrivateDataSignalViewSet(viewsets.ModelViewSet):
     queryset = DataSignal.objects.all()
     serializer_class = DataSignalSerializer
     permission_classes = [permissions.IsAuthenticated | HasInternalAPIKey]
+    lookup_field = 'uuid'
